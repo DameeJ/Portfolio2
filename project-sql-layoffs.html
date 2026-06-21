@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Layoffs — Data Cleaning & EDA | Jesudamilola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16213B; --paper:#FAF8F3; --paper-dim:#F2EFE6;
+    --gold:#C8973A; --gold-soft:#EFE0C0;
+    --teal:#2F6F62; --teal-soft:#DCEAE6;
+    --graphite:#3A3A3E; --line:#E2DDD0;
+    --placeholder:#B5562F;
+    --max:880px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--graphite);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(250,248,243,0.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:980px;}
+  .brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;color:var(--ink);}
+  .navlinks{display:flex;gap:28px;}
+  .navlinks a{color:var(--graphite);text-decoration:none;font-size:0.88rem;font-weight:500;opacity:0.7;}
+  .navlinks a.active{opacity:1;color:var(--ink);border-bottom:2px solid var(--gold);padding-bottom:2px;}
+
+  header.hero{padding:56px 0 40px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--teal);}
+  .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,4.2vw,2.7rem);color:var(--ink);margin:0 0 14px;letter-spacing:-0.01em;}
+  .hero p.lede{font-size:1.02rem;max-width:620px;opacity:0.85;margin:0 0 22px;}
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:0.74rem;padding:5px 12px;border-radius:14px;background:var(--paper-dim);border:1px solid var(--line);color:var(--graphite);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:3px;font-weight:600;font-size:0.9rem;text-decoration:none;background:var(--ink);color:var(--paper);}
+
+  section.block{padding:44px 0;border-bottom:1px solid var(--line);}
+  .block .section-head{margin-bottom:24px;}
+  .block .eyebrow{margin-bottom:8px;}
+  .block h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.55rem;color:var(--ink);margin:0;}
+  .block > .wrap > p.intro{max-width:640px;font-size:0.98rem;margin-bottom:8px;}
+
+  .step{margin-bottom:30px;}
+  .step:last-child{margin-bottom:0;}
+  .step-num{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+  .step h4{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--ink);margin:0 0 8px;font-weight:600;}
+  .step p.desc{font-size:0.94rem;margin:0 0 14px;opacity:0.85;}
+
+  .code-box{
+    background:var(--ink);border-radius:5px;overflow:hidden;margin-bottom:14px;
+  }
+  .code-box .code-label{
+    font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--gold-soft);padding:9px 16px;border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+  .code-box pre{
+    margin:0;padding:16px;font-family:'IBM Plex Mono',monospace;font-size:0.84rem;
+    color:#E8E5DC;overflow-x:auto;white-space:pre-wrap;
+  }
+  .code-box pre .ph{color:#E0A36E;font-style:italic;}
+
+  .result-box{
+    background:var(--gold-soft);border-left:3px solid var(--gold);border-radius:3px;
+    padding:14px 18px;margin-bottom:4px;
+  }
+  .result-box .result-label{
+    font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;
+    color:#8C6A24;margin-bottom:6px;
+  }
+  .result-box .result-text{font-size:0.95rem;color:var(--ink);}
+  .result-box .ph{color:var(--placeholder);font-style:italic;font-weight:500;}
+
+  .note{
+    background:var(--paper-dim);border:1px dashed var(--line);border-radius:4px;
+    padding:14px 18px;font-size:0.88rem;color:var(--graphite);margin-top:8px;
+  }
+  .note .ph{color:var(--placeholder);font-style:italic;font-weight:500;}
+
+  footer.cta{padding:50px 0;text-align:center;}
+  footer.cta h3{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--ink);margin-bottom:16px;}
+  .pagefoot{padding:30px 0;text-align:center;}
+  .pagefoot p{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--graphite);opacity:0.5;}
+
+  @media (max-width:640px){ .hero h1{font-size:1.7rem;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">Jesudamilola</div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="project.html" class="active">Projects</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">SQL · Data Cleaning &amp; EDA</div>
+    <h1>Global Layoffs: Data Cleaning &amp; Exploratory Analysis</h1>
+    <p class="lede">Taking a raw, inconsistent dataset of global company layoffs and turning it into a clean, analysis-ready table — then digging into it to find which companies and locations were hit hardest.</p>
+    <div class="tag-row">
+      <span class="tag">SQL</span>
+      <span class="tag">Data Cleaning</span>
+      <span class="tag">Exploratory Data Analysis</span>
+    </div>
+    <a href="[ github link ]" class="btn">View Full Code on GitHub →</a>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Overview</div>
+      <h2>About this dataset</h2>
+    </div>
+    <p class="intro">This project uses a global layoffs dataset covering company workforce reductions, believed to be sourced from <span class="mono">[ confirm dataset source — e.g. Alex The Analyst / Kaggle ]</span>, tracking layoffs through 2023 in the wake of the COVID-19 economic slowdown. The raw data needed significant cleanup before it could be reliably analyzed — duplicate entries, inconsistent text formatting, and missing values all had to be addressed first.</p>
+    <div class="note">Once you've confirmed the source, swap in a proper credit line and link here — good practice, and it heads off any "where did this come from" question before it's asked.</div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Part One</div>
+      <h2>Data Cleaning</h2>
+    </div>
+    <p class="intro" style="margin-bottom:28px;">Before any analysis could happen, the raw dataset needed to be standardized and trimmed down to what was actually usable.</p>
+
+    <div class="step">
+      <div class="step-num">Step 01</div>
+      <h4>Remove duplicate records</h4>
+      <p class="desc">Identified and removed duplicate layoff entries to make sure each event was only counted once.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Step 02</div>
+      <h4>Standardize data &amp; fix errors</h4>
+      <p class="desc">Cleaned up inconsistent text formatting and corrected errors across fields like company name, industry, and location.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Step 03</div>
+      <h4>Review null values</h4>
+      <p class="desc">Reviewed missing values across the dataset to decide what could be reasonably filled in, left blank, or flagged.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Step 04</div>
+      <h4>Remove unnecessary columns &amp; rows</h4>
+      <p class="desc">Trimmed the dataset down using a few different conditions to drop columns and rows that weren't useful for analysis.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Part Two</div>
+      <h2>Exploratory Data Analysis</h2>
+    </div>
+    <p class="intro" style="margin-bottom:28px;">With a clean dataset in hand, the next step was digging in to understand the actual scale and shape of the layoffs.</p>
+
+    <div class="step">
+      <div class="step-num">Question 01</div>
+      <h4>How big were the layoffs, relative to company size?</h4>
+      <p class="desc">Calculated what percentage of each company's workforce was laid off, to gauge the real scale of the cuts beyond raw headcounts.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Result</div>
+        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Question 02</div>
+      <h4>Which companies shut down entirely?</h4>
+      <p class="desc">Identified companies that laid off 100% of their staff — i.e., went under completely.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Result</div>
+        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Question 03</div>
+      <h4>How large were the affected companies?</h4>
+      <p class="desc">Looked at company size (e.g. funds raised) to see whether bigger, better-funded companies were more or less likely to make major cuts.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Result</div>
+        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Question 04</div>
+      <h4>Which company had the single biggest layoff in one day?</h4>
+      <p class="desc">Found the largest single-day layoff event in the dataset.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Result</div>
+        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Question 05</div>
+      <h4>Which company and location had the highest total layoffs?</h4>
+      <p class="desc">Found the company with the highest cumulative layoffs overall, and separately, the location (city/country) with the highest total layoffs.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>-- <span class="ph">[ write query ]</span></pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Result — Company</div>
+        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+      </div>
+      <div class="result-box" style="margin-top:10px;">
+        <div class="result-label">Result — Location</div>
+        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="cta">
+  <div class="wrap">
+    <h3>Want to see the full breakdown?</h3>
+    <a href="[ github link ]" class="btn">View Full Code on GitHub →</a>
+  </div>
+</footer>
+
+<div class="pagefoot">
+  <p>MOCKUP — fill in bracketed placeholders before publishing</p>
+</div>
+
+</body>
+</html>

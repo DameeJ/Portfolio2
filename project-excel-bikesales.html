@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bike Sales Customer Analysis — Excel | Jesudamilola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF8F3; --bg-rgb:250,248,243; --bg-dim:#F2EFE6;
+    --text:#16213B; --text-body:#3A3A3E;
+    --gold:#C8973A; --gold-soft:#EFE0C0;
+    --teal:#2F6F62; --teal-soft:#DCEAE6;
+    --line:#E2DDD0;
+    --placeholder:#B5562F;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#10141C; --bg-rgb:16,20,28; --bg-dim:#19202C;
+      --text:#F2EFE6; --text-body:#C9C5B8;
+      --gold:#D9A857; --gold-soft:#3A2E16;
+      --teal:#5AB39E; --teal-soft:#16332C;
+      --line:#2A3142;
+      --placeholder:#E2895D;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text-body);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;transition:background 0.2s ease, color 0.2s ease;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px;}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(var(--bg-rgb),0.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:980px;}
+  .brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;color:var(--text);}
+  .navlinks{display:flex;gap:28px;}
+  .navlinks a{color:var(--text-body);text-decoration:none;font-size:0.88rem;font-weight:500;opacity:0.7;}
+  .navlinks a.active{opacity:1;color:var(--text);border-bottom:2px solid var(--gold);padding-bottom:2px;}
+
+  header.hero{padding:56px 0 40px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--teal);}
+  .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,4.2vw,2.6rem);color:var(--text);margin:0 0 14px;letter-spacing:-0.01em;}
+  .hero p.lede{font-size:1.02rem;max-width:620px;opacity:0.85;margin:0 0 22px;}
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:0.74rem;padding:5px 12px;border-radius:14px;background:var(--bg-dim);border:1px solid var(--line);color:var(--text-body);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:3px;font-weight:600;font-size:0.9rem;text-decoration:none;background:var(--text);color:var(--bg);}
+
+  section.block{padding:44px 0;border-bottom:1px solid var(--line);}
+  .block .section-head{margin-bottom:24px;}
+  .block .eyebrow{margin-bottom:8px;}
+  .block h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.55rem;color:var(--text);margin:0;}
+  .block > .wrap > p.intro{max-width:640px;font-size:0.98rem;margin-bottom:8px;}
+
+  .dash-frame{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg-dim);}
+  .dash-frame img{width:100%;display:block;}
+
+  .step{margin-bottom:22px;}
+  .step:last-child{margin-bottom:0;}
+  .step-num{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+  .step h4{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--text);margin:0 0 6px;font-weight:600;}
+  .step p{font-size:0.93rem;margin:0;opacity:0.85;}
+
+  table.price-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.92rem;}
+  table.price-table th{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-body);opacity:0.7;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);}
+  table.price-table td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--text-body);}
+  table.price-table td.num{font-family:'IBM Plex Mono',monospace;color:var(--text);}
+
+  .finding{margin-bottom:26px;}
+  .finding:last-child{margin-bottom:0;}
+  .finding h4{font-family:'Fraunces',serif;font-size:1.08rem;color:var(--text);margin:0 0 8px;font-weight:600;}
+  .finding p{font-size:0.95rem;margin:0;}
+  .ph{color:var(--placeholder);font-style:italic;font-weight:500;}
+
+  footer.cta{padding:50px 0;text-align:center;}
+  footer.cta h3{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--text);margin-bottom:16px;}
+  .pagefoot{padding:30px 0;text-align:center;}
+  .pagefoot p{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--text-body);opacity:0.5;}
+
+  @media (max-width:640px){ .hero h1{font-size:1.6rem;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">Jesudamilola</div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="project.html" class="active">Projects</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Excel · Data Cleaning &amp; Visualization</div>
+    <h1>Bike Sales: Customer Purchase Analysis</h1>
+    <p class="lede">Cleaning and analyzing a bike sales dataset to understand what separates customers who purchased a bike from those who didn't — looking at income, age, and commute patterns.</p>
+    <div class="tag-row">
+      <span class="tag">Excel</span>
+      <span class="tag">PivotTables</span>
+      <span class="tag">Data Cleaning</span>
+      <span class="tag">Data Visualization</span>
+    </div>
+    <a href="[ workbook download link ]" class="btn">Download the Workbook →</a>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Overview</div>
+      <h2>About this project</h2>
+    </div>
+    <p class="intro">This project cleans and analyzes a customer dataset to explore the relationship between bike purchases and customer demographics — specifically income, age bracket, and commute distance. The finished dashboard includes interactive filters for marital status, region, and education level, allowing the data to be sliced by customer segment.</p>
+
+    <div class="dash-frame" style="margin-top:20px;">
+      <img src="excel-bike-dashboard-preview.png" alt="Excel bike sales dashboard — income, age bracket, and commute analysis">
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Process</div>
+      <h2>How it was built</h2>
+    </div>
+
+    <div class="step">
+      <div class="step-num">Step 01</div>
+      <h4>Clean the dataset</h4>
+      <p>Reviewed the raw customer data for inconsistencies, duplicates, and formatting issues before analysis.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 02</div>
+      <h4>Analyze key segments</h4>
+      <p>Built PivotTables to compare income, age bracket, and commute distance between customers who purchased a bike and those who didn't.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 03</div>
+      <h4>Visualize the findings</h4>
+      <p>Designed an interactive dashboard with slicers for marital status, region, and education, so the underlying patterns can be explored by segment.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Key Findings</div>
+      <h2>What the data showed</h2>
+    </div>
+
+    <div class="finding">
+      <h4>Bike purchasers had higher average income than non-purchasers</h4>
+      <p>This held true across both genders — and was most pronounced among male customers.</p>
+      <table class="price-table">
+        <tr><th>Gender</th><th>No (Didn't Purchase)</th><th>Yes (Purchased)</th></tr>
+        <tr><td>Female</td><td class="num">£53,440</td><td class="num">£55,774</td></tr>
+        <tr><td>Male</td><td class="num">£56,208</td><td class="num">£60,124</td></tr>
+      </table>
+    </div>
+
+    <div class="finding">
+      <h4>Most customers fall into the Middle Age bracket</h4>
+      <p>That concentration held for both purchasers and non-purchasers — far fewer customers fell into the Adolescence or Old categories by comparison.</p>
+    </div>
+
+    <div class="finding">
+      <h4>Shorter commutes were most common, with purchasing patterns diverging at longer distances</h4>
+      <p>Customers with very short commutes (0–1 miles) made up the largest segment overall. As commute distance increased, non-purchasers became relatively more common at the longer distances, while purchasers declined more steadily — suggesting commute length may have some relationship to purchase likelihood, though income appears to be the stronger signal of the two.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="cta">
+  <div class="wrap">
+    <h3>Want to explore the full workbook?</h3>
+    <a href="[ workbook download link ]" class="btn">Download the Workbook →</a>
+  </div>
+</footer>
+
+<div class="pagefoot">
+  <p>MOCKUP — fill in bracketed placeholder before publishing</p>
+</div>
+
+</body>
+</html>

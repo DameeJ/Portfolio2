@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apocalypse Preppers — Multi-Store Sales Analysis | Jesudamilola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF8F3; --bg-rgb:250,248,243; --bg-dim:#F2EFE6;
+    --text:#16213B; --text-body:#3A3A3E;
+    --gold:#C8973A; --gold-soft:#EFE0C0;
+    --teal:#2F6F62; --teal-soft:#DCEAE6;
+    --line:#E2DDD0;
+    --code-bg:#16213B;
+    --placeholder:#B5562F;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#10141C; --bg-rgb:16,20,28; --bg-dim:#19202C;
+      --text:#F2EFE6; --text-body:#C9C5B8;
+      --gold:#D9A857; --gold-soft:#3A2E16;
+      --teal:#5AB39E; --teal-soft:#16332C;
+      --line:#2A3142;
+      --code-bg:#05070C;
+      --placeholder:#E2895D;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text-body);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;transition:background 0.2s ease, color 0.2s ease;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px;}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(var(--bg-rgb),0.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:980px;}
+  .brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;color:var(--text);}
+  .navlinks{display:flex;gap:28px;}
+  .navlinks a{color:var(--text-body);text-decoration:none;font-size:0.88rem;font-weight:500;opacity:0.7;}
+  .navlinks a.active{opacity:1;color:var(--text);border-bottom:2px solid var(--gold);padding-bottom:2px;}
+
+  header.hero{padding:56px 0 40px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--teal);}
+  .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,4.2vw,2.6rem);color:var(--text);margin:0 0 14px;letter-spacing:-0.01em;}
+  .hero p.lede{font-size:1.02rem;max-width:620px;opacity:0.85;margin:0 0 22px;}
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:0.74rem;padding:5px 12px;border-radius:14px;background:var(--bg-dim);border:1px solid var(--line);color:var(--text-body);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:3px;font-weight:600;font-size:0.9rem;text-decoration:none;background:var(--text);color:var(--bg);}
+
+  section.block{padding:44px 0;border-bottom:1px solid var(--line);}
+  .block .section-head{margin-bottom:24px;}
+  .block .eyebrow{margin-bottom:8px;}
+  .block h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.55rem;color:var(--text);margin:0;}
+  .block > .wrap > p.intro{max-width:640px;font-size:0.98rem;margin-bottom:8px;}
+
+  .dash-frame{
+    border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg-dim);
+  }
+  .dash-frame img{width:100%;display:block;}
+  .embed-note{
+    margin-top:10px;font-size:0.85rem;color:var(--placeholder);font-style:italic;font-family:'IBM Plex Mono',monospace;
+  }
+
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0;}
+  .kpi{background:var(--bg-dim);border:1px solid var(--line);border-radius:5px;padding:18px;text-align:center;}
+  .kpi .num{font-family:'Fraunces',serif;font-size:1.7rem;color:var(--text);font-weight:600;}
+  .kpi .label{font-size:0.78rem;color:var(--text-body);opacity:0.75;margin-top:4px;}
+  .kpi .ph{color:var(--placeholder);font-style:italic;font-size:0.74rem;display:block;margin-top:4px;}
+
+  .finding{margin-bottom:26px;}
+  .finding:last-child{margin-bottom:0;}
+  .finding h4{font-family:'Fraunces',serif;font-size:1.08rem;color:var(--text);margin:0 0 8px;font-weight:600;}
+  .finding p{font-size:0.95rem;margin:0;}
+  .ph{color:var(--placeholder);font-style:italic;font-weight:500;}
+
+  .note{background:var(--bg-dim);border:1px dashed var(--line);border-radius:4px;padding:14px 18px;font-size:0.88rem;margin-top:10px;}
+
+  footer.cta{padding:50px 0;text-align:center;}
+  footer.cta h3{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--text);margin-bottom:16px;}
+  .pagefoot{padding:30px 0;text-align:center;}
+  .pagefoot p{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--text-body);opacity:0.5;}
+
+  @media (max-width:640px){ .hero h1{font-size:1.6rem;} .kpi-row{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">Jesudamilola</div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="project.html" class="active">Projects</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Power BI · Retail Analytics</div>
+    <h1>Apocalypse Preppers: Multi-Store Sales Analysis</h1>
+    <p class="lede">An interactive Power BI dashboard analyzing sales data across four prepper-supply retailers — covering product performance, customer behavior, pricing, and regional distribution.</p>
+    <div class="tag-row">
+      <span class="tag">Power BI</span>
+      <span class="tag">Data Visualization</span>
+      <span class="tag">Retail Analytics</span>
+    </div>
+    <a href="[ power bi publish-to-web link ]" class="btn">View Live Dashboard →</a>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Overview</div>
+      <h2>About this project</h2>
+    </div>
+    <p class="intro">This dashboard pulls together transaction-level sales data from four prepper-supply stores — Alex The Analyst Apocalypse Preppers, Apocalypse Preppers United, Prep4Anything Prepping Store, and Uncle Joe's Prep Shop — to understand which products sell best, how purchasing differs by store, and how pricing compares to production cost across the catalog.</p>
+
+    <div class="dash-frame" style="margin-top:20px;">
+      <img src="powerbi-dashboard-preview.png" alt="Power BI dashboard preview — Apocalypse Preppers sales analysis">
+    </div>
+    <div class="embed-note">[ once published, swap this static image for your live Power BI "Publish to Web" embed iframe ]</div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">At a Glance</div>
+      <h2>Headline numbers</h2>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="num">3,001</div>
+        <div class="label">Total units sold across all stores</div>
+      </div>
+      <div class="kpi">
+        <div class="num">50</div>
+        <div class="label">Unique purchase transactions</div>
+      </div>
+      <div class="kpi">
+        <div class="num">$9</div>
+        <div class="label">Smallest single transaction</div>
+      </div>
+      <div class="kpi">
+        <div class="num">$22K</div>
+        <div class="label">Total revenue across all transactions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Key Findings</div>
+      <h2>What the data showed</h2>
+    </div>
+
+    <div class="finding">
+      <h4>Multitools, rope, and tape led the catalog</h4>
+      <p>The Multitool Survival Knife was the top-selling product overall with 477 units sold, followed by Nylon Rope (390) and Duct Tape (365) — practical, low-cost essentials outsold higher-ticket gear like the Solar Battery Flashlight (182) and Backpacks (212).</p>
+    </div>
+
+    <div class="finding">
+      <h4>Uncle Joe's Prep Shop was the top-performing store</h4>
+      <p>Of the 3,001 total units sold, Uncle Joe's Prep Shop accounted for 951 — about 32% of all sales — narrowly ahead of Apocalypse Preppers United (828). Alex The Analyst Apocalypse Preppers and Prep4Anything Prepping Store followed closely behind, at 613 and 609 respectively.</p>
+    </div>
+
+    <div class="finding">
+      <h4>Sales were regionally concentrated</h4>
+      <p>Minnesota led all states with roughly 6,000 in purchases, followed by Delaware (~4,000) and New York (~3,000) — together accounting for a significant share of total sales volume.</p>
+    </div>
+
+    <div class="finding">
+      <h4>Margins varied notably across the product line</h4>
+      <p><span class="ph">[ optional: add a sentence on which products had the widest gap between price and production cost, if worth calling out ]</span></p>
+    </div>
+  </div>
+</section>
+
+<footer class="cta">
+  <div class="wrap">
+    <h3>Want to explore the full dashboard?</h3>
+    <a href="[ power bi publish-to-web link ]" class="btn">View Live Dashboard →</a>
+  </div>
+</footer>
+
+<div class="pagefoot">
+  <p>MOCKUP — fill in bracketed placeholders before publishing</p>
+</div>
+
+</body>
+</html>
