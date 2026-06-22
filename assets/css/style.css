@@ -1,0 +1,542 @@
+/* ============================================================
+   JESUDAMILOLA PORTFOLIO — SHARED STYLESHEET
+   Edit this file to update the look of the entire site.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. DESIGN TOKENS (colours, fonts)
+      Change a value here → changes everywhere instantly
+   ------------------------------------------------------------ */
+:root {
+  --bg:         #FAF8F3;
+  --bg-rgb:     250,248,243;
+  --bg-dim:     #F2EFE6;
+  --text:       #16213B;
+  --text-body:  #3A3A3E;
+  --gold:       #C8973A;
+  --gold-soft:  #EFE0C0;
+  --teal:       #2F6F62;
+  --teal-soft:  #DCEAE6;
+  --line:       #E2DDD0;
+  --placeholder:#B5562F;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:         #10141C;
+    --bg-rgb:     16,20,28;
+    --bg-dim:     #19202C;
+    --text:       #F2EFE6;
+    --text-body:  #C9C5B8;
+    --gold:       #D9A857;
+    --gold-soft:  #3A2E16;
+    --teal:       #5AB39E;
+    --teal-soft:  #16332C;
+    --line:       #2A3142;
+    --placeholder:#E2895D;
+  }
+}
+
+/* ------------------------------------------------------------
+   2. BASE RESET & BODY
+   ------------------------------------------------------------ */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-body);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mono { font-family: 'IBM Plex Mono', monospace; }
+
+/* ------------------------------------------------------------
+   3. LAYOUT
+   ------------------------------------------------------------ */
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.wrap--wide { max-width: 980px; }
+
+/* ------------------------------------------------------------
+   4. NAVIGATION
+   ------------------------------------------------------------ */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(var(--bg-rgb), 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+nav .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.navlinks { display: flex; gap: 28px; }
+
+.navlinks a {
+  color: var(--text-body);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.navlinks a:hover { opacity: 1; }
+
+.navlinks a.active {
+  opacity: 1;
+  color: var(--text);
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 2px;
+}
+
+/* ------------------------------------------------------------
+   5. EYEBROW LABEL
+   ------------------------------------------------------------ */
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: var(--teal);
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   6. BUTTONS
+   ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 3px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btn-primary {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 18px rgba(22,33,59,0.2);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--text);
+  opacity: 0.85;
+}
+
+.btn-ghost:hover {
+  background: var(--text);
+  color: var(--bg);
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------
+   7. TAGS & FILTER CHIPS
+   ------------------------------------------------------------ */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 26px;
+}
+
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.74rem;
+  padding: 5px 12px;
+  border-radius: 14px;
+  background: var(--bg-dim);
+  border: 1px solid var(--line);
+  color: var(--text-body);
+}
+
+.chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text-body);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.chip.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+.chip:hover:not(.active) { border-color: var(--text); }
+
+/* ------------------------------------------------------------
+   8. SECTION STRUCTURE (shared by all content pages)
+   ------------------------------------------------------------ */
+section.block {
+  padding: 52px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-head { margin-bottom: 28px; }
+.section-head .eyebrow { margin-bottom: 8px; }
+
+.section-head h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.block > .wrap > p.intro {
+  max-width: 640px;
+  font-size: 0.98rem;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+/* ------------------------------------------------------------
+   9. DASHBOARD / IMAGE FRAME
+   ------------------------------------------------------------ */
+.dash-frame {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-dim);
+  margin-top: 20px;
+}
+
+.dash-frame img { width: 100%; display: block; }
+
+.embed-note {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--placeholder);
+  font-style: italic;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ------------------------------------------------------------
+   10. PROCESS STEPS (SQL, Excel, PowerBI case studies)
+   ------------------------------------------------------------ */
+.step { margin-bottom: 24px; }
+.step:last-child { margin-bottom: 0; }
+
+.step-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.step h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.step p {
+  font-size: 0.93rem;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* ------------------------------------------------------------
+   11. KEY FINDINGS (shared by all case study pages)
+   ------------------------------------------------------------ */
+.finding { margin-bottom: 26px; }
+.finding:last-child { margin-bottom: 0; }
+
+.finding h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.08rem;
+  color: var(--text);
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.finding p { font-size: 0.95rem; margin: 0; }
+
+/* ------------------------------------------------------------
+   12. KPI CARDS (PowerBI & Complaints pages)
+   ------------------------------------------------------------ */
+.kpi-row {
+  display: grid;
+  gap: 14px;
+  margin: 28px 0;
+}
+
+.kpi {
+  background: var(--bg-dim);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 16px;
+  text-align: center;
+}
+
+.kpi .num {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.kpi .label {
+  font-size: 0.76rem;
+  color: var(--text-body);
+  opacity: 0.75;
+  margin-top: 4px;
+}
+
+/* ------------------------------------------------------------
+   13. DATA TABLES (Tableau, Excel pages)
+   ------------------------------------------------------------ */
+table.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.92rem;
+}
+
+table.price-table th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-body);
+  opacity: 0.7;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+table.price-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-body);
+}
+
+table.price-table td.num {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------
+   14. SQL CODE BLOCKS
+   ------------------------------------------------------------ */
+.code-box {
+  background: var(--text);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.code-box .code-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  padding: 9px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.code-box pre {
+  margin: 0;
+  padding: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.84rem;
+  color: #E8E5DC;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.code-box pre .ph {
+  color: #E0A36E;
+  font-style: italic;
+}
+
+/* ------------------------------------------------------------
+   15. RESULT BOXES (SQL EDA section)
+   ------------------------------------------------------------ */
+.result-box {
+  background: var(--gold-soft);
+  border-left: 3px solid var(--gold);
+  border-radius: 3px;
+  padding: 14px 18px;
+  margin-bottom: 4px;
+}
+
+.result-box .result-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-body);
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+
+.result-box .result-text { font-size: 0.95rem; color: var(--text); }
+
+/* ------------------------------------------------------------
+   16. RECOMMENDATIONS LIST (Complaints page)
+   ------------------------------------------------------------ */
+.rec-list { margin: 0; padding: 0; list-style: none; }
+
+.rec-list li {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+
+.rec-list li:last-child { border-bottom: none; }
+
+.rec-list .rec-num {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--gold);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   17. NOTE / CAVEAT BOX
+   ------------------------------------------------------------ */
+.note {
+  background: var(--bg-dim);
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+  padding: 16px 18px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+/* ------------------------------------------------------------
+   18. PLACEHOLDER TEXT (fill-in markers)
+   ------------------------------------------------------------ */
+.ph {
+  color: var(--placeholder);
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   19. HERO SECTION (shared structure across case study pages)
+   ------------------------------------------------------------ */
+header.hero {
+  padding: 56px 0 40px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: clamp(1.9rem, 4.2vw, 2.7rem);
+  color: var(--text);
+  margin: 0 0 14px;
+  letter-spacing: -0.01em;
+}
+
+.hero p.lede {
+  font-size: 1.02rem;
+  max-width: 620px;
+  opacity: 0.85;
+  margin: 0 0 22px;
+}
+
+/* ------------------------------------------------------------
+   20. CTA FOOTER (bottom of case study pages)
+   ------------------------------------------------------------ */
+footer.cta {
+  padding: 50px 0;
+  text-align: center;
+}
+
+footer.cta h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* ------------------------------------------------------------
+   21. PAGE FOOTER
+   ------------------------------------------------------------ */
+.pagefoot {
+  padding: 30px 0;
+  text-align: center;
+  border-top: 1px solid var(--line);
+}
+
+.pagefoot p {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem;
+  color: var(--text-body);
+  opacity: 0.5;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------
+   22. RESPONSIVE HELPERS
+   ------------------------------------------------------------ */
+@media (max-width: 680px) {
+  .hero h1 { font-size: 1.7rem; }
+  .kpi-row { grid-template-columns: 1fr !important; }
+  .navlinks { gap: 16px; }
+}
