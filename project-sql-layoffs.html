@@ -225,15 +225,11 @@ AND percentage_laid_off IS NULL; ]</span></pre>
 SELECT MAX(percentage_laid_off),  MIN(percentage_laid_off)
 FROM world_layoffs.layoffs_staging2
 WHERE  percentage_laid_off IS NOT NULL;
-			-- if we order by funcs_raised_millions we can see how big some of these companies were
-SELECT *
-FROM world_layoffs.layoffs_staging2
-WHERE  percentage_laid_off = 1
-ORDER BY funds_raised_millions DESC;]</span></pre>
+			]</span></pre>
       </div>
       <div class="result-box">
         <div class="result-label">Result</div>
-        <div class="result-text"><span class="ph">[ BritishVolt looks like an EV company, Quibi! - wow raised like 2 billion dollars and went under - ouch
+        <div class="result-text"><span class="ph">[ Some companies are 1, meaning they totally went under 
 ]</span></div>
       </div>
     </div>
@@ -244,11 +240,16 @@ ORDER BY funds_raised_millions DESC;]</span></pre>
       <p class="desc">Identified companies that laid off 100% of their staff — i.e., went under completely.</p>
       <div class="code-box">
         <div class="code-label">SQL</div>
-        <pre>-- <span class="ph">[ write query ]</span></pre>
+        <pre>-- <span class="ph">[ -- if we order by funcs_raised_millions we can see how big some of these companies were
+SELECT *
+FROM world_layoffs.layoffs_staging2
+WHERE  percentage_laid_off = 1
+ORDER BY funds_raised_millions DESC; ]</span></pre>
       </div>
       <div class="result-box">
         <div class="result-label">Result</div>
-        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+        <div class="result-text"><span class="ph">[ BritishVolt looks like an EV company, Quibi! - wow raised like 2 billion dollars and went under - ouch
+]</span></div>
       </div>
     </div>
 
