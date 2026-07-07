@@ -119,9 +119,8 @@
       <div class="eyebrow">Overview</div>
       <h2>About this dataset</h2>
     </div>
-    <p class="intro">This project uses a global layoffs dataset covering company workforce reductions, believed to be sourced from <span class="mono">[ confirm dataset source — e.g. Alex The Analyst / Kaggle ]</span>, tracking layoffs through 2023 in the wake of the COVID-19 economic slowdown. The raw data needed significant cleanup before it could be reliably analyzed — duplicate entries, inconsistent text formatting, and missing values all had to be addressed first.</p>
-    <div class="note">Once you've confirmed the source, swap in a proper credit line and link here — good practice, and it heads off any "where did this come from" question before it's asked.</div>
-  </div>
+    <p class="intro">This project uses a global layoffs dataset covering company workforce reductions, believed to be sourced from <span class="mono">[ Alex The Analyst]</span>, tracking layoffs through 2023 in the wake of the COVID-19 economic slowdown. The raw data needed significant cleanup before it could be reliably analyzed — duplicate entries, inconsistent text formatting, and missing values all had to be addressed first.</p>
+    
 </section>
 
 <section class="block">
@@ -138,7 +137,17 @@
       <p class="desc">Identified and removed duplicate layoff entries to make sure each event was only counted once.</p>
       <div class="code-box">
         <div class="code-label">SQL</div>
-        <pre>-- <span class="ph">[ write query ]</span></pre>
+        <pre>-- <span class="ph">[ SELECT *
+FROM (
+	SELECT company, location, industry, total_laid_off,percentage_laid_off,`date`, stage, country, funds_raised_millions,
+		ROW_NUMBER() OVER (
+			PARTITION BY company, location, industry, total_laid_off,percentage_laid_off,`date`, stage, country, funds_raised_millions
+			) AS row_num
+	FROM 
+		world_layoffs.layoffs_staging
+) duplicates
+WHERE 
+	row_num > 1;]</span></pre>
       </div>
     </div>
 
@@ -148,7 +157,18 @@
       <p class="desc">Cleaned up inconsistent text formatting and corrected errors across fields like company name, industry, and location.</p>
       <div class="code-box">
         <div class="code-label">SQL</div>
-        <pre>-- <span class="ph">[ write query ]</span></pre>
+        <pre>-- <span class="ph">[ -- we should set the blanks to nulls since those are typically easier to work with
+UPDATE world_layoffs.layoffs_staging2
+SET industry = NULL
+WHERE industry = '';
+          -- I also noticed the Crypto has multiple different variations. We need to standardize that - let's say all to Crypto
+SELECT DISTINCT industry
+FROM world_layoffs.layoffs_staging2
+ORDER BY industry;
+
+UPDATE layoffs_staging2
+SET industry = 'Crypto'
+WHERE industry IN ('Crypto Currency', 'CryptoCurrency');]</span></pre>
       </div>
     </div>
 
@@ -158,7 +178,12 @@
       <p class="desc">Reviewed missing values across the dataset to decide what could be reasonably filled in, left blank, or flagged.</p>
       <div class="code-box">
         <div class="code-label">SQL</div>
-        <pre>-- <span class="ph">[ write query ]</span></pre>
+        <pre>-- <span class="ph">[ SELECT *
+FROM world_layoffs.layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;
+          -- the null values in total_laid_off, percentage_laid_off, and funds_raised_millions all look normal.
+          -- I like having them null because it makes it easier for calculations during the EDA phase]</span></pre>
       </div>
     </div>
 
@@ -168,7 +193,15 @@
       <p class="desc">Trimmed the dataset down using a few different conditions to drop columns and rows that weren't useful for analysis.</p>
       <div class="code-box">
         <div class="code-label">SQL</div>
-        <pre>-- <span class="ph">[ write query ]</span></pre>
+        <pre>-- <span class="ph">[ SELECT *
+FROM world_layoffs.layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;
+
+-- Delete Useless data we can't really use
+DELETE FROM world_layoffs.layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL; ]</span></pre>
       </div>
     </div>
   </div>
