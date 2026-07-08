@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Layoffs — Data Cleaning & EDA | Jesudamilola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ── SQL page-specific styles only ── */
+  .context-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--teal);
+    background: var(--teal-soft);
+    border-left: 3px solid var(--teal);
+    border-radius: 3px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .step { margin-bottom: 36px; }
+  .step:last-child { margin-bottom: 0; }
+  .step p.desc { font-size: 0.94rem; margin: 0 0 14px; opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap wrap--wide">
+    <a href="index.html" class="brand">Jesudamilola</a>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="project.html" class="active">Projects</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">SQL · Data Cleaning &amp; EDA</div>
+    <h1>Global Layoffs: Data Cleaning &amp; Exploratory Analysis</h1>
+    <p class="lede">Taking a raw, inconsistent dataset of global company layoffs and turning it into a clean, analysis-ready table — then digging into it to find which companies and locations were hit hardest.</p>
+    <div class="tag-row">
+      <span class="tag">SQL</span>
+      <span class="tag">Data Cleaning</span>
+      <span class="tag">Exploratory Data Analysis</span>
+    </div>
+    <a href="[ github link ]" class="btn btn-primary">View Full Code on GitHub →</a>
+  </div>
+</header>
+
+<!-- OVERVIEW -->
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Overview</div>
+      <h2>About this dataset</h2>
+    </div>
+    <p class="intro">This project uses a global layoffs dataset sourced from Alex The Analyst, tracking company workforce reductions through 2023 in the wake of the COVID-19 economic slowdown. The raw data needed significant cleanup before it could be reliably analyzed — duplicate entries, inconsistent text formatting, and missing values all had to be addressed first.</p>
+  </div>
+</section>
+
+<!-- PART ONE: DATA CLEANING -->
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Part One</div>
+      <h2>Data Cleaning</h2>
+    </div>
+    <p class="intro">Before any analysis could happen, the raw dataset needed to be standardized and trimmed down to what was actually usable.</p>
+
+    <!-- Step 01 -->
+    <div class="step">
+      <div class="step-num">Step 01</div>
+      <h4>Remove duplicate records</h4>
+      <p class="desc">Used a ROW_NUMBER window function partitioned across all key columns to flag duplicate rows, then removed any where the row number was greater than 1.</p>
+      <div class="code-box">
+        <div class="code-label">SQL — Identify duplicates</div>
+        <pre>SELECT *
+FROM (
+    SELECT company, location, industry,
+           total_laid_off, percentage_laid_off, `date`,
+           stage, country, funds_raised_millions,
+           ROW_NUMBER() OVER (
+               PARTITION BY company, location, industry,
+                            total_laid_off, percentage_laid_off,
+                            `date`, stage, country, funds_raised_millions
+           ) AS row_num
+    FROM world_layoffs.layoffs_staging
+) duplicates
+WHERE row_num > 1;</pre>
+      </div>
+    </div>
+
+    <!-- Step 02 -->
+    <div class="step">
+      <div class="step-num">Step 02</div>
+      <h4>Standardize data &amp; fix errors</h4>
+      <p class="desc">Blank industry values were converted to NULL for easier handling. Inconsistent variations of "Crypto" across the industry field were unified into a single standard label.</p>
+      <div class="code-box">
+        <div class="code-label">SQL — Blank to NULL</div>
+        <pre>UPDATE world_layoffs.layoffs_staging2
+SET industry = NULL
+WHERE industry = '';</pre>
+      </div>
+      <div class="code-box">
+        <div class="code-label">SQL — Standardize Crypto variations</div>
+        <pre>SELECT DISTINCT industry
+FROM world_layoffs.layoffs_staging2
+ORDER BY industry;
+
+UPDATE layoffs_staging2
+SET industry = 'Crypto'
+WHERE industry IN ('Crypto Currency', 'CryptoCurrency');</pre>
+      </div>
+    </div>
+
+    <!-- Step 03 -->
+    <div class="step">
+      <div class="step-num">Step 03</div>
+      <h4>Review null values</h4>
+      <p class="desc">Checked for rows where both key numeric columns were NULL. Decided to leave valid NULLs in place — they make calculations in the EDA phase cleaner than blank strings would.</p>
+      <div class="code-box">
+        <div class="code-label">SQL — Check for null rows</div>
+        <pre>SELECT *
+FROM world_layoffs.layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;</pre>
+      </div>
+      <div class="context-note">
+        NULLs in total_laid_off, percentage_laid_off, and funds_raised_millions were left intentionally — they represent genuinely missing data and are easier to handle in aggregations than empty strings.
+      </div>
+    </div>
+
+    <!-- Step 04 -->
+    <div class="step">
+      <div class="step-num">Step 04</div>
+      <h4>Remove unnecessary columns &amp; rows</h4>
+      <p class="desc">Rows where both total_laid_off and percentage_laid_off were NULL had no analytical value and were deleted from the staging table.</p>
+      <div class="code-box">
+        <div class="code-label">SQL — Identify rows to remove</div>
+        <pre>SELECT *
+FROM world_layoffs.layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;</pre>
+      </div>
+      <div class="code-box">
+        <div class="code-label">SQL — Delete useless rows</div>
+        <pre>DELETE FROM world_layoffs.layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;</pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PART TWO: EDA -->
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Part Two</div>
+      <h2>Exploratory Data Analysis</h2>
+    </div>
+    <p class="intro">With a clean dataset in hand, the next step was digging in to understand the actual scale and shape of the layoffs.</p>
+
+    <!-- Q01 -->
+    <div class="step">
+      <div class="step-num">Question 01</div>
+      <h4>How big were the layoffs, relative to company size?</h4>
+      <p class="desc">Calculated the max and min percentage laid off to understand the range — from small cuts to full shutdowns.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>SELECT MAX(percentage_laid_off), MIN(percentage_laid_off)
+FROM world_layoffs.layoffs_staging2
+WHERE percentage_laid_off IS NOT NULL;</pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Finding</div>
+        <div class="result-text">Some companies returned a percentage_laid_off of 1 — meaning they laid off 100% of their workforce and went under entirely.</div>
+      </div>
+    </div>
+
+    <!-- Q02 -->
+    <div class="step">
+      <div class="step-num">Question 02</div>
+      <h4>Which companies shut down entirely?</h4>
+      <p class="desc">Filtered for companies with 100% layoffs, then ordered by funds raised to see how well-funded some of these failures were.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>SELECT *
+FROM world_layoffs.layoffs_staging2
+WHERE percentage_laid_off = 1
+ORDER BY funds_raised_millions DESC;</pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Finding</div>
+        <div class="result-text">BritishVolt (an EV company) and Quibi stood out — Quibi raised approximately $2 billion in funding before shutting down completely. A stark reminder that capital raised doesn't guarantee survival.</div>
+      </div>
+    </div>
+
+    <!-- Q03 -->
+    <div class="step">
+      <div class="step-num">Question 03</div>
+      <h4>Which company had the single biggest layoff in one day?</h4>
+      <p class="desc">Sorted by total_laid_off descending to find the largest single-event workforce reduction.</p>
+      <div class="code-box">
+        <div class="code-label">SQL</div>
+        <pre>SELECT company, total_laid_off
+FROM world_layoffs.layoffs_staging
+ORDER BY total_laid_off DESC
+LIMIT 5;</pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Finding</div>
+        <div class="result-text"><span class="ph">[ fill in result ]</span></div>
+      </div>
+    </div>
+
+    <!-- Q04 -->
+    <div class="step">
+      <div class="step-num">Question 04</div>
+      <h4>Which company and location had the highest total layoffs?</h4>
+      <p class="desc">Aggregated total layoffs by company and separately by location to find where the biggest cumulative damage occurred.</p>
+      <div class="code-box">
+        <div class="code-label">SQL — By company</div>
+        <pre>SELECT company, SUM(total_laid_off) AS total
+FROM world_layoffs.layoffs_staging2
+GROUP BY company
+ORDER BY total DESC
+LIMIT 10;</pre>
+      </div>
+      <div class="code-box">
+        <div class="code-label">SQL — By location</div>
+        <pre>SELECT location, SUM(total_laid_off) AS total
+FROM world_layoffs.layoffs_staging2
+GROUP BY location
+ORDER BY total DESC
+LIMIT 10;</pre>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Result — Top companies by total layoffs</div>
+        <div class="result-text">
+          <strong>1. Uber</strong> — 7,525 &nbsp;&nbsp;
+          <strong>2. Booking.com</strong> — 4,375
+        </div>
+      </div>
+      <div class="result-box" style="margin-top:10px;">
+        <div class="result-label">Result — Top location by total layoffs</div>
+        <div class="result-text">The United States recorded the highest total layoffs by a significant margin across all locations in the dataset.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="cta">
+  <div class="wrap">
+    <h3>Want to see the full breakdown?</h3>
+    <a href="[ github link ]" class="btn btn-primary">View Full Code on GitHub →</a>
+  </div>
+</footer>
+
+<div class="pagefoot">
+  <p>© Oladele Jesudamilola</p>
+</div>
+
+</body>
+</html>
