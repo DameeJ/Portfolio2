@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Complaint Analysis — Excel | Jesudamilola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF8F3; --bg-rgb:250,248,243; --bg-dim:#F2EFE6;
+    --text:#16213B; --text-body:#3A3A3E;
+    --gold:#C8973A; --gold-soft:#EFE0C0;
+    --teal:#2F6F62; --teal-soft:#DCEAE6;
+    --line:#E2DDD0;
+    --placeholder:#B5562F;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#10141C; --bg-rgb:16,20,28; --bg-dim:#19202C;
+      --text:#F2EFE6; --text-body:#C9C5B8;
+      --gold:#D9A857; --gold-soft:#3A2E16;
+      --teal:#5AB39E; --teal-soft:#16332C;
+      --line:#2A3142;
+      --placeholder:#E2895D;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text-body);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;transition:background 0.2s ease, color 0.2s ease;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px;}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(var(--bg-rgb),0.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:980px;}
+  .brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;color:var(--text);}
+  .navlinks{display:flex;gap:28px;}
+  .navlinks a{color:var(--text-body);text-decoration:none;font-size:0.88rem;font-weight:500;opacity:0.7;}
+  .navlinks a.active{opacity:1;color:var(--text);border-bottom:2px solid var(--gold);padding-bottom:2px;}
+
+  header.hero{padding:56px 0 40px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--teal);}
+  .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,4.2vw,2.6rem);color:var(--text);margin:0 0 14px;letter-spacing:-0.01em;}
+  .hero p.lede{font-size:1.02rem;max-width:620px;opacity:0.85;margin:0 0 22px;}
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:0.74rem;padding:5px 12px;border-radius:14px;background:var(--bg-dim);border:1px solid var(--line);color:var(--text-body);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:3px;font-weight:600;font-size:0.9rem;text-decoration:none;background:var(--text);color:var(--bg);}
+
+  section.block{padding:44px 0;border-bottom:1px solid var(--line);}
+  .block .section-head{margin-bottom:24px;}
+  .block .eyebrow{margin-bottom:8px;}
+  .block h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.55rem;color:var(--text);margin:0;}
+  .block > .wrap > p.intro{max-width:640px;font-size:0.98rem;margin-bottom:8px;}
+
+  .dash-frame{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg-dim);}
+  .dash-frame img{width:100%;display:block;}
+
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0;}
+  .kpi{background:var(--bg-dim);border:1px solid var(--line);border-radius:5px;padding:16px;text-align:center;}
+  .kpi .num{font-family:'Fraunces',serif;font-size:1.5rem;color:var(--text);font-weight:600;}
+  .kpi .label{font-size:0.75rem;color:var(--text-body);opacity:0.75;margin-top:4px;}
+
+  .step{margin-bottom:20px;}
+  .step:last-child{margin-bottom:0;}
+  .step-num{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+  .step h4{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--text);margin:0 0 6px;font-weight:600;}
+  .step p{font-size:0.93rem;margin:0;opacity:0.85;}
+
+  .finding{margin-bottom:26px;}
+  .finding:last-child{margin-bottom:0;}
+  .finding h4{font-family:'Fraunces',serif;font-size:1.08rem;color:var(--text);margin:0 0 8px;font-weight:600;}
+  .finding p{font-size:0.95rem;margin:0;}
+
+  .rec-list{margin:0;padding:0;list-style:none;}
+  .rec-list li{
+    display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);font-size:0.95rem;
+  }
+  .rec-list li:last-child{border-bottom:none;}
+  .rec-list .rec-num{
+    font-family:'IBM Plex Mono',monospace;color:var(--gold);font-weight:600;flex-shrink:0;
+  }
+
+  .note{background:var(--bg-dim);border:1px dashed var(--line);border-radius:4px;padding:16px 18px;font-size:0.9rem;}
+
+  footer.cta{padding:50px 0;text-align:center;}
+  footer.cta h3{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--text);margin-bottom:16px;}
+  .pagefoot{padding:30px 0;text-align:center;}
+  .pagefoot p{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--text-body);opacity:0.5;}
+
+  @media (max-width:640px){ .hero h1{font-size:1.6rem;} .kpi-row{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">Jesudamilola</div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="project.html" class="active">Projects</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Excel · Customer Complaint Analysis</div>
+    <h1>Customer Complaint Report &amp; Resolution Analysis</h1>
+    <p class="lede">An end-to-end analysis of 1,000 customer complaint records — uncovering which products generate the most issues, how efficiently the support team resolves them, and where the process is breaking down.</p>
+    <div class="tag-row">
+      <span class="tag">Excel</span>
+      <span class="tag">Data Cleaning</span>
+      <span class="tag">Data Visualization</span>
+      <span class="tag">Reporting</span>
+    </div>
+    <a href="[ presentation download link ]" class="btn">View Full Presentation →</a>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Problem Statement</div>
+      <h2>Why this analysis was needed</h2>
+    </div>
+    <p class="intro">The company was receiving a high volume of complaints across multiple products and services, but had no structured way to understand which products generated the most complaints, how long resolution actually took, which issues came up most often, or which agents were handling cases most effectively. Without that visibility, decision-makers had no data-backed basis for improving customer experience or operational efficiency.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Process</div>
+      <h2>How it was built</h2>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 01</div>
+      <h4>Data collection &amp; cleaning</h4>
+      <p>Standardized inconsistent date formats, filled and flagged missing values, built new metrics using Excel formulas and functions, and formatted the dataset as a structured table ready for analysis.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 02</div>
+      <h4>Analysis &amp; insights</h4>
+      <p>Broke the dataset down by product, complaint type, agent, and resolution status to identify patterns in volume, speed, and bottlenecks.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 03</div>
+      <h4>Visualization &amp; reporting</h4>
+      <p>Built an interactive dashboard and packaged the findings into a presentation covering the full story — from raw data to recommendations.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The Dashboard</div>
+      <h2>At a glance</h2>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="num">1,000</div><div class="label">Total Complaints</div></div>
+      <div class="kpi"><div class="num">25%</div><div class="label">Resolution Rate</div></div>
+      <div class="kpi"><div class="num">3 days</div><div class="label">Avg. Resolution Time</div></div>
+      <div class="kpi"><div class="num">497</div><div class="label">Unresolved Complaints</div></div>
+    </div>
+    <div class="dash-frame">
+      <img src="excel-complaints-dashboard-preview.jpg" alt="Customer complaint analysis dashboard">
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Key Findings</div>
+      <h2>What the data showed</h2>
+    </div>
+
+    <div class="finding">
+      <h4>Only 1 in 4 complaints were fully resolved</h4>
+      <p>Of all complaints logged, just 25% reached "Resolved" status. The remainder was split fairly evenly across In Progress (26%), Pending (~25%), and Escalated (~24%) — meaning roughly three-quarters of complaints were still unresolved at the time of reporting.</p>
+    </div>
+
+    <div class="finding">
+      <h4>Electrical and connectivity issues topped the complaint types</h4>
+      <p>"Sparks Inside" was the single most common complaint type (111 cases), followed by Noise Complaint (109), Not Cooling (108), and a tie between Channel Unavailable and Product Defect (106 each) — the top 5 types alone accounted for over half of all complaints.</p>
+    </div>
+
+    <div class="finding">
+      <h4>Internet Service drove the most complaints — and took longest to resolve</h4>
+      <p>Internet Service had the highest complaint volume of any product (114 cases) and also the longest average resolution time (3.7 days) — well above products like Refrigerators, which averaged just 2.5 days. This points to service-related issues being structurally slower to resolve than physical product defects.</p>
+    </div>
+
+    <div class="finding">
+      <h4>Agent workload was fairly balanced, though unevenly so</h4>
+      <p>Complaint volume per agent ranged from 69 to 84 cases across the 9-person team, with James Okafor handling the highest volume (84 complaints).</p>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Recommendations</div>
+      <h2>What the business should do next</h2>
+    </div>
+    <ul class="rec-list">
+      <li><span class="rec-num">01</span> Adopt a digital system to log and monitor complaints in real-time, enabling quicker identification and resolution.</li>
+      <li><span class="rec-num">02</span> Focus quality control and product enhancement efforts on the products with the highest number and percentage of unresolved complaints.</li>
+      <li><span class="rec-num">03</span> Set formal complaint resolution targets — establish a service-level agreement (SLA) for resolution times and monitor performance against it.</li>
+      <li><span class="rec-num">04</span> Provide periodic training on handling and documenting complaints to drive faster, more consistent resolution outcomes.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="block" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Limitations</div>
+      <h2>Honest caveats</h2>
+    </div>
+    <div class="note">This analysis was constrained by incomplete data — particularly in the Resolution Date column — which limited the accuracy of metrics like average resolution time and resolution rate. External customer satisfaction data also wasn't available, so complaint trends couldn't be validated against actual customer sentiment.</div>
+  </div>
+</section>
+
+<footer class="cta">
+  <div class="wrap">
+    <h3>Want to see the full presentation?</h3>
+    <a href="[ presentation download link ]" class="btn">View Full Presentation →</a>
+  </div>
+</footer>
+
+<div class="pagefoot">
+  <p>MOCKUP — fill in bracketed placeholder before publishing</p>
+</div>
+
+</body>
+</html>
