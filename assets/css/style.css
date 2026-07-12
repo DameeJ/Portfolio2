@@ -379,7 +379,7 @@ table.price-table td.num {
    14. SQL CODE BLOCKS
    ------------------------------------------------------------ */
 .code-box {
-  background: var(--text);
+  background: #0D1117; /* always dark — code boxes never flip with theme */
   border-radius: 5px;
   overflow: hidden;
   margin-bottom: 14px;
